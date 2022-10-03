@@ -3,7 +3,7 @@ const routerAPI = require('./routes');
 const app = express();
 const puerto = 3000;
 
-//app.use(express.json());
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send("Bienvenidos!");

@@ -12,15 +12,22 @@ const conexion = mysql.createConnection({
 });
 
 router.get('/', function (req, res) {
-    conexion.connect();  
+    //conexion.connect();  
    
     conexion.query('SELECT * FROM tb_paises', function(err, rows, fields)   
     {  
-        conexion.end();
+        //conexion.end();
         if (err) throw err;  
         res.json(rows); 
     });
   });
+
+
+
+
+
+
+
 
 module.exports = router;
 
