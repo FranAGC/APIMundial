@@ -34,6 +34,30 @@ router.post('/', (req, res) => {
 });
 
 
+router.patch('/:id', (req, res) => {
+    const {id} = req.params;
+    const body = req.body;
+    conexion.query(`UPDATE tb_estadios SET foto_estadio = ? 
+    WHERE id_estadio = ?`, [body.foto_estadio, id], function (error, results, fields) {
+    if (error) throw error;
+        // Neat!
+    });
+    
+    res.status(200).send(body);
+});
+
+
+router.delete('/:id', (req, res) => {
+    const {id} = req.params;
+    conexion.query(`DELETE FROM tb_estadios 
+    WHERE id_estadio = ?`, id, function (error, results, fields) {
+    if (error) throw error;
+        // Neat!
+    });
+    
+    res.status(200).send(`Registro: ${id} borrado`);
+});
+
 
 module.exports = router;
 
