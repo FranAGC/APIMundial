@@ -11,6 +11,22 @@ const conexion = mysql.createConnection({
     password: ''
 });
 
+router.get('/:id', function (req, res) {
+    const {id} = req.params;
+    conexion.query(`SELECT * FROM tb_estadios WHERE id_estadio = ?`, id, function(err, rows, fields)   
+    {
+        if (err) throw err;  
+        if(id <= 8 && id > 0) {
+            res.status(200).json(rows); 
+            
+        } else {
+            res.status(404).json({
+                message: "not found"
+            });
+        }
+    });
+  });
+
 
 router.get('/', function (req, res) {
     //conexion.connect();
@@ -30,7 +46,9 @@ router.post('/', (req, res) => {
         // Neat!
     });
     
-    res.status(200).send(body);
+    res.status(201).send(body);
+
+    
 });
 
 
