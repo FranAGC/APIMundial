@@ -14,7 +14,14 @@ const conexion = mysql.createConnection({
 
 router.get('/:id', function (req, res) {
     const {id} = req.params;
-    conexion.query(`SELECT * FROM tb_calendario WHERE id_calendario = ?`, id, function(err, rows, fields)   
+    conexion.query(`SELECT c.id_calendario, e.nombre_estadio, p.nombre_pais, p2.nombre_pais, g.nombre_grupo, j.nombre_jornada, c.hora_calendario
+    FROM tb_calendario as c
+    INNER JOIN tb_estadios AS e ON c.id_estadio = e.id_estadio
+    INNER JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
+    INNER JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
+    INNER JOIN tb_grupos AS g ON c.id_grupo = g.id_grupo
+    INNER JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada 
+    WHERE id_calendario = ?`, id, function(err, rows, fields)   
     {
         if (err) throw err;  
         if(id <= 33 && id > 0) {
@@ -31,7 +38,14 @@ router.get('/:id', function (req, res) {
 
 router.get('/', function (req, res) {
     //conexion.connect();
-    conexion.query('SELECT * FROM tb_calendario', function(err, rows, fields)   
+    conexion.query(`SELECT c.id_calendario, e.nombre_estadio, p.nombre_pais, p2.nombre_pais, g.nombre_grupo, j.nombre_jornada, c.hora_calendario
+    FROM tb_calendario as c
+    INNER JOIN tb_estadios AS e ON c.id_estadio = e.id_estadio
+    INNER JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
+    INNER JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
+    INNER JOIN tb_grupos AS g ON c.id_grupo = g.id_grupo
+    INNER JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada
+    ORDER BY id_calendario ASC`, function(err, rows, fields)   
     {  
         //conexion.end();
         if (err) throw err;  
