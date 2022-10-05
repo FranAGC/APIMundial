@@ -24,7 +24,7 @@ router.get('/:id', function (req, res) {
     WHERE id_calendario = ?`, id, function(err, rows, fields)   
     {
         if (err) throw err;  
-        if(id <= 33 && id > 0) {
+        if(id <= 64 && id > 0) {
             res.status(200).json(rows); 
             
         } else {
@@ -62,8 +62,6 @@ router.post('/', (req, res) => {
     });
     
     res.status(201).send(body);
-
-    
 });
 
 
