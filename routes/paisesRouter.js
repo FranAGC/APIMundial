@@ -14,7 +14,11 @@ const conexion = mysql.createConnection({
 
 router.get('/:id', function (req, res) {
     const {id} = req.params;
-    conexion.query(`SELECT * FROM tb_paises WHERE id_pais = ?`, id, function(err, rows, fields)   
+    conexion.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.id_nombre
+    FROM tb_paises
+    INNER JOIN tb_grupos AS g ON tb_paises.id_grupo = g.id_grupo
+    INNER JOIN tb_regiones AS r ON tb_paises.id_region = r.id_region
+    WHERE id_pais = ?`, id, function(err, rows, fields)   
     {
         if (err) throw err;  
         if(id <= 33 && id > 0) {
@@ -31,7 +35,10 @@ router.get('/:id', function (req, res) {
 
 router.get('/', function (req, res) {
     //conexion.connect();
-    conexion.query('SELECT * FROM tb_paises', function(err, rows, fields)   
+    conexion.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.id_nombre
+    FROM tb_paises
+    INNER JOIN tb_grupos AS g ON tb_paises.id_grupo = g.id_grupo
+    INNER JOIN tb_regiones AS r ON tb_paises.id_region = r.id_region`, function(err, rows, fields)   
     {  
         //conexion.end();
         if (err) throw err;  
