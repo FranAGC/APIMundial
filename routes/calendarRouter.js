@@ -14,13 +14,12 @@ const conexion = mysql.createConnection({
 
 router.get('/:id', function (req, res) {
     const {id} = req.params;
-    conexion.query(`SELECT c.id_calendario, e.nombre_estadio, p.nombre_pais, p2.nombre_pais, g.nombre_grupo, j.nombre_jornada, c.hora_calendario
+    conexion.query(`SELECT c.id_calendario, e.nombre_estadio, p.nombre_pais as pais1, p2.nombre_pais as pais2, j.nombre_jornada, c.hora_calendario
     FROM tb_calendario as c
     INNER JOIN tb_estadios AS e ON c.id_estadio = e.id_estadio
     INNER JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
     INNER JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
-    INNER JOIN tb_grupos AS g ON c.id_grupo = g.id_grupo
-    INNER JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada 
+    INNER JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada
     WHERE id_calendario = ?`, id, function(err, rows, fields)   
     {
         if (err) throw err;  
@@ -38,12 +37,11 @@ router.get('/:id', function (req, res) {
 
 router.get('/', function (req, res) {
     //conexion.connect();
-    conexion.query(`SELECT c.id_calendario, e.nombre_estadio, p.nombre_pais, p2.nombre_pais, g.nombre_grupo, j.nombre_jornada, c.hora_calendario --, g.nombre_grupo
+    conexion.query(`SELECT c.id_calendario, e.nombre_estadio, p.nombre_pais as pais1, p2.nombre_pais as pais2, j.nombre_jornada, c.hora_calendario
     FROM tb_calendario as c
     INNER JOIN tb_estadios AS e ON c.id_estadio = e.id_estadio
     INNER JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
     INNER JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
-    --INNER JOIN tb_grupos AS g ON p.id_pais = g.id_grupo
     INNER JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada
     ORDER BY id_calendario ASC`, function(err, rows, fields)   
     {  
