@@ -1,0 +1,36 @@
+Insert Paises
+Post: 127.0.0.1:3000/api/v1/paises/
+
+{
+    "nombre_pais": "Narnia",
+    "codigo_pais": "ABC",
+    "ranking_pais": "15",
+    "copas_pais": "0",
+    "bandera_pais": "foto",
+    "id_grupo": "7",
+    "id_region": "1"
+}
+
+Insert Estadios
+Post: 127.0.0.1:3000/api/v1/estadios/
+{
+    "nombre_estadio": "asdd",
+    "capacidad_estadio": "40000",
+    "ciudad_estadio": "Qwerty",
+    "descripcion_estadio": "descripcion asawehjhas888  ja9889ad",
+    "foto_estadio": "foto"
+}
+
+Insert Resultados
+Post: 127.0.0.1:3000/api/v1/resultados/
+{
+    "id_calendario": "1",
+    "golesp1_resultados": "0",
+    "golesp2_resultados": "1"
+}
+
+
+
+
+
+

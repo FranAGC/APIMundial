@@ -4,13 +4,13 @@ require('dotenv').config();
 
 const router = express.Router();
 
-
 const conexion = mysql.createConnection({
     host: process.env.host,
     database: process.env.database,
     user: process.env.user,
     password: process.env.password
 });
+
 
 router.get('/:id', function (req, res) {
     const {id} = req.params;
@@ -42,9 +42,9 @@ router.get('/', function (req, res) {
 
 router.post('/', (req, res) => {
     const body = req.body;
-    conexion.query('INSERT INTO tb_calendario SET ?', body, function (error, results, fields) {
+    conexion.query('INSERT INTO tb_resultados SET ?', body, function (error, results, fields) {
     if (error) throw error;
-        // Neat!
+        //res.status(404).send(error);
     });
     
     res.status(201).send(body);

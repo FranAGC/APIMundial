@@ -1,5 +1,5 @@
 About the project:
-Mundial Qatar 2022 API, give information about the teams (countries), matchs, stadiums, etc.
+API Mundial Qatar 2022 API, provee informacion acerca de los equipos)paises=, estados, calendario, resultados etc.
 
 
 Built in Whit:
