@@ -70,14 +70,14 @@ class ResultService {
     if (!req.params.id) {
       return next(new AppError("Id no encontrado", 404));
     }
-    sql.query(`UPDATE tb_paises SET nombre_pais = ?, codigo_pais = ?, ranking_pais = ?, 
-    copas_pais = ?, bandera_pais = ?, id_grupo = ?, id_region = ? WHERE id_pais = ?`, 
-        [body.nombre_pais, body.codigo_pais, body.ranking_pais, body.copas_pais, body.bandera_pais, body.id_grupo, body.id_region, req.params.id],
+    sql.query(`UPDATE tb_resultados SET golesp1_resultados = ?, golesp2_resultados = ?
+    WHERE id_resultados = ?`, 
+    [body.golesp1_resultados, body.golesp2_resultados, req.params.id],
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
         res.status(201).json({
           status: "success",
-          message: "Pais actualizado!",
+          message: "Resultado actualizado!",
         });
       }
     );
@@ -88,12 +88,12 @@ class ResultService {
     if (!req.params.id) {
       return next(new AppError("No todo id found", 404));
     }
-    sql.query(`DELETE FROM tb_paises WHERE id_pais = ?`, req.params.id,
+    sql.query(`DELETE FROM tb_resultados WHERE id_resultados = ?`, req.params.id,
       function (err, fields) {
         if (err) return next(new AppError(err, 500));
         res.status(201).json({
           status: "success",
-          message: "Pais eliminado!",
+          message: "resultado eliminado!",
         });
       }
     );

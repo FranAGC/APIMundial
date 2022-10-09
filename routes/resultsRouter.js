@@ -11,7 +11,7 @@ router.get('/:id', service.finOne);
 
 router.post('/', service.create);
 
-router.put('/:id', service.update);
+router.patch('/:id', service.update);
 
 router.delete('/:id', service.delete);
 
