@@ -2,7 +2,7 @@ const AppError = require("../utils/appError");
 const sql = require("./db.js");
 
 
-class StadiumsService {
+class CalendarioService {
 
   constructor(){
   }
@@ -12,13 +12,13 @@ class StadiumsService {
     if (!req.body) return next(new AppError("No form data found", 404));
     const values = req.body;
     sql.query(
-      "INSERT INTO tb_estadios SET ?",
+      "INSERT INTO tb_calendario SET ?",
       values,
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
         res.status(201).json({
           status: "success",
-          message: "todo created!",
+          message: "Partido Creado!",
         });
       }
     );
@@ -26,7 +26,13 @@ class StadiumsService {
 
 
   find = (req, res, next) => {
-      sql.query("SELECT * FROM tb_estadios", function (err, data, fields) {
+      sql.query(`SELECT c.id_calendario, e.nombre_estadio, p.nombre_pais as pais1, p2.nombre_pais as pais2, j.nombre_jornada, c.hora_calendario
+      FROM tb_calendario as c
+      INNER JOIN tb_estadios AS e ON c.id_estadio = e.id_estadio
+      INNER JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
+      INNER JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
+      INNER JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada
+      ORDER BY id_calendario ASC`, function (err, data, fields) {
         if(err) return next(new AppError(err))
         res.status(200).json({
           status: "success",
@@ -34,15 +40,20 @@ class StadiumsService {
           data: data,
         });
       });
-      };
+    };
 
 
   finOne = (req, res, next) => {
-    if (req.params.id > 9) {
+    if (!req.params.id) {
       return next(new AppError("No todo id found", 404));
     }
-    sql.query(
-      "SELECT * FROM tb_estadios WHERE id_estadio = ?",
+    sql.query(`SELECT c.id_calendario, e.nombre_estadio, p.nombre_pais as pais1, p2.nombre_pais as pais2, j.nombre_jornada, c.hora_calendario
+    FROM tb_calendario as c
+    INNER JOIN tb_estadios AS e ON c.id_estadio = e.id_estadio
+    INNER JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
+    INNER JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
+    INNER JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada
+    WHERE id_calendario = ?`,
       [req.params.id],
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
@@ -61,13 +72,14 @@ class StadiumsService {
     if (!req.params.id) {
       return next(new AppError("Id no encontrado", 404));
     }
-    sql.query(`UPDATE tb_estadios SET nombre_estadio = ?, capacidad_estadio = ?, ciudad_estadio = ?, 
-    descripcion_estadio = ?, foto_estadio = ? WHERE id_estadio = ?`, [body.nombre_estadio, body.capacidad_estadio, body.ciudad_estadio, body.descripcion_estadio, body.foto_estadio, req.params.id],
+    sql.query(`UPDATE tb_calendario SET id_estadio = ?, id_pais1 = ?, id_pais2 = ?, 
+    id_jornada = ?, hora_calendario = ? WHERE id_calendario = ?`, 
+        [body.id_estadio, body.id_pais1, body.id_pais2, body.id_jornada, body.hora_calendario, req.params.id],
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
         res.status(201).json({
           status: "success",
-          message: "Estadio actualizado!",
+          message: "Partido actualizado!",
         });
       }
     );
@@ -78,16 +90,16 @@ class StadiumsService {
     if (!req.params.id) {
       return next(new AppError("No todo id found", 404));
     }
-    sql.query(`DELETE FROM tb_estadios WHERE id_estadio = ?`, req.params.id,
+    sql.query(`DELETE FROM tb_calendario WHERE id_calendario = ?`, req.params.id,
       function (err, fields) {
         if (err) return next(new AppError(err, 500));
         res.status(201).json({
           status: "success",
-          message: "Estadio eliminado!",
+          message: "Partido eliminado!",
         });
       }
     );
   }
 }
 
-module.exports = StadiumsService;
+module.exports = CalendarioService;
