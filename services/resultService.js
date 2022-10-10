@@ -2,6 +2,8 @@ const AppError = require("../utils/appError");
 const sql = require("./db.js");
 
 
+
+
 class ResultService {
 
   constructor(){
@@ -46,7 +48,8 @@ class ResultService {
     if (!req.params.id) {
       return next(new AppError("No todo id found", 404));
     }
-    sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, p.nombre_pais as pais1, p2.nombre_pais as pais2
+    sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, 
+    p.nombre_pais as pais1, p2.nombre_pais as pais2, c.hora_calendario
     FROM tb_resultados as res
     INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
     LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
@@ -66,7 +69,7 @@ class ResultService {
 
 
   update = (req, res, next) => {
-    const body = req.body;  
+    const body = req.body;
     if (!req.params.id) {
       return next(new AppError("Id no encontrado", 404));
     }
@@ -81,9 +84,10 @@ class ResultService {
         });
       }
     );
+    //actualizarTbPosiciones(body);
   };
-
       
+
   delete = (req, res, next) => {
     if (!req.params.id) {
       return next(new AppError("No todo id found", 404));
