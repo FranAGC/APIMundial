@@ -28,11 +28,7 @@ class StadiumsService {
   find = (req, res, next) => {
       sql.query("SELECT * FROM tb_estadios", function (err, data, fields) {
         if(err) return next(new AppError(err))
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       });
       };
 
@@ -46,11 +42,7 @@ class StadiumsService {
       [req.params.id],
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       }
     );
   };

@@ -22,8 +22,7 @@ class ResultService {
           status: "success",
           message: "todo created!",
         });
-      }
-    );
+      });
     };
 
 
@@ -35,11 +34,7 @@ class ResultService {
       LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
       ORDER BY id_resultados ASC`, function (err, data, fields) {
         if(err) return next(new AppError(err))
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       });
       };
 
@@ -58,11 +53,7 @@ class ResultService {
       [req.params.id],
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       }
     );
   };
@@ -84,7 +75,6 @@ class ResultService {
         });
       }
     );
-    //actualizarTbPosiciones(body);
   };
       
 

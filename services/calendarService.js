@@ -34,11 +34,7 @@ class CalendarioService {
       INNER JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada
       ORDER BY id_calendario ASC`, function (err, data, fields) {
         if(err) return next(new AppError(err))
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       });
     };
 
@@ -57,11 +53,7 @@ class CalendarioService {
       [req.params.id],
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       }
     );
   };

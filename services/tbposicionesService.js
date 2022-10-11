@@ -2,7 +2,55 @@ const AppError = require("../utils/appError");
 const sql = require("./db.js");
 
 
+
+async function calculoPuntos(req) {
+    console.log(req.params.id_p1, req.params.id_p2)
+    let paises = null;
+    await sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP, 
+        partidosP_tablaP, golesF_tablaP, golesC_tablaP
+        FROM tb_tablaposiciones
+        WHERE id_pais in (1,2)`, function (err, result, fields) {
+        if (err) throw err;
+        paises = result;
+        console.log("prueba 1" + result);
+    });
+
+    /*if(req.body.golesp1_resultados > req.body.golesp2_resultados)
+    {
+        paises[0].puntosT_tablaP += 3;
+        paises[0].partidosJ_tablaP += 1;
+        paises[0].partidosG_tablaP += 1;
+        paises[1].partidosJ_tablaP += 1;
+        paises[1].partidosP_tablaP += 1;
+    }
+    else if(req.body.golesp1_resultados < req.body.golesp2_resultados)
+    {
+        paises[0].partidosJ_tablaP += 1;
+        paises[0].partidosP_tablaP += 1;
+        paises[1].puntosT_tablaP += 3;
+        paises[1].partidosJ_tablaP += 1;
+        paises[1].partidosG_tablaP += 1;
+        
+    }
+    else {
+        paises[0].puntosT_tablaP += 1;
+        paises[0].partidosJ_tablaP += 1;
+        paises[0].partidosE_tablaP += 1;
+        paises[1].puntosT_tablaP += 1;
+        paises[1].partidosJ_tablaP += 1;
+        paises[1].partidosE_tablaP += 1;
+    }
+    paises[0].golesF_tablaP += req.body.golesp1_resultados;
+    paises[0].golesF_tablaP += req.body.golesp1_resultados;*/
+    
+    return paises;
+}
+  
+
+
+
 class ResultService {
+
 
   constructor(){
   }
@@ -20,24 +68,19 @@ class ResultService {
           status: "success",
           message: "todo created!",
         });
-      }
-    );
-    };
+    });
+  };
 
 
   find = (req, res, next) => {
-      sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, p.nombre_pais as pais1, p2.nombre_pais as pais2
-      FROM tb_resultados as res
-      INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
-      LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
-      LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
-      ORDER BY id_resultados ASC`, function (err, data, fields) {
+      sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
+      partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
+      FROM tb_tablaposiciones as pos
+      INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
+      LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
+      ORDER BY pos.id_pais ASC`, function (err, data, fields) {
         if(err) return next(new AppError(err))
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       });
       };
 
@@ -46,45 +89,38 @@ class ResultService {
     if (!req.params.id) {
       return next(new AppError("No todo id found", 404));
     }
-    sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, 
-    p.nombre_pais as pais1, p2.nombre_pais as pais2, c.hora_calendario
-    FROM tb_resultados as res
-    INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
-    LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
-    LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
-    WHERE id_resultados = ?`,
+    sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
+    partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
+    FROM tb_tablaposiciones as pos
+    INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
+    LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
+    WHERE pos.id_pais = ?`,
       [req.params.id],
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       }
     );
   }; 
 
-  update = (req, res, next) => {
 
-    const body = req.body;
-    data = calculoPuntos(body);
-    if (!req.params.id_p1) {
+  update = (req, res, next) => {
+    let paises = calculoPuntos(req);
+    console.log(paises);
+    if (!req.params) {
       return next(new AppError("Id no encontrado", 404));
     }
     sql.query(`UPDATE tb_tablaposiciones
     SET puntosT_tablaP = ?, partidosJ_tablaP = ?, partidosG_tablaP = ?, partidosE_tablaP = ?,
     partidosP_tablaP = ?, golesF_tablaP = ?, golesC_tablaP = ?
-    WHERE id_pais = ?`, [data[0], 0, 0, 0, 0, 0, 0, req.params.id_p1],
-      function (err, data, fields) {
+    WHERE id_pais = ?`, [paises[0].puntosT_tablaP, paises[0].partidosJ_tablaP, paises[0].partidosG_tablaP, paises[0].partidosE_tablaP,
+    paises[0].partidosP_tablaP, paises[0].golesF_tablaP, paises[0].golesC_tablaP, req.params.id_p1], function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
         res.status(201).json({
           status: "success",
           message: "Resultado actualizado!",
         });
-      }
-    );
-    //actualizarTbPosiciones(body);
+    });
   };
       
 
@@ -111,25 +147,3 @@ module.exports = ResultService;
 
 
 
-
-
-function calculoPuntos(body) {
-   let paises = 3;
-   if(body.golesp1_resultados > body.golesp2_resultados){
-      paises = 3;
-      console.log(paises);
-    }
-    data = [paises];
-
-    return data;
-  
-    /*sql.query(`UPDATE tb_tablaposiciones
-    SET puntosT_tablaP = ?, partidosJ_tablaP = ?, partidosG_tablaP = ?, partidosE_tablaP = ?,
-    partidosP_tablaP = ?, golesF_tablaP = ?, golesC_tablaP = ?
-    WHERE id_pais1 = ?`, [req.params.id], function (err, result, fields) {
-    if (err) throw err;
-    tbres = result;
-    console.log(body);
-    });*/
-  
-  }

@@ -32,11 +32,7 @@ class PaisesService {
       INNER JOIN tb_regiones AS r ON tb_paises.id_region = r.id_region
       ORDER BY id_pais ASC`, function (err, data, fields) {
         if(err) return next(new AppError(err))
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       });
       };
 
@@ -53,11 +49,7 @@ class PaisesService {
       [req.params.id],
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
-        res.status(200).json({
-          status: "success",
-          length: data?.length,
-          data: data,
-        });
+        res.status(200).json(data);
       }
     );
   };
