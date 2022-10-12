@@ -27,7 +27,7 @@ class PaisesService {
 
   find = (req, res, next) => {
     
-      sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.id_nombre
+      sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.nombre_region
       FROM tb_paises
       INNER JOIN tb_grupos AS g ON tb_paises.id_grupo = g.id_grupo
       INNER JOIN tb_regiones AS r ON tb_paises.id_region = r.id_region
