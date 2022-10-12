@@ -7,7 +7,7 @@ const service = new calendarService();
 
 
 
-router.get('/', service.find);
+router.get('/', service.getJornadas);
 
 router.get('/:id', service.finOne);
 
