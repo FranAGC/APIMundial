@@ -3,57 +3,88 @@ const sql = require("./db.js");
 
 
 
-async function calculoPuntos(req) {
-    console.log(req.params.id_p1, req.params.id_p2)
-    let paises = null;
-    await sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP, 
+function calcPunteo(req) {
+  const customPromise = new Promise((resolve, reject) => {
+    sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP, 
         partidosP_tablaP, golesF_tablaP, golesC_tablaP
         FROM tb_tablaposiciones
-        WHERE id_pais in (1,2)`, function (err, result, fields) {
+        WHERE id_pais in (?,?)`,[req.params.id_p1,req.params.id_p2], function (err, result, fields) {
         if (err) throw err;
-        paises = result;
-        console.log("prueba 1" + result);
-    });
+        //console.log(result);
+        resolve(result);
+    })
 
-    /*if(req.body.golesp1_resultados > req.body.golesp2_resultados)
-    {
-        paises[0].puntosT_tablaP += 3;
-        paises[0].partidosJ_tablaP += 1;
-        paises[0].partidosG_tablaP += 1;
-        paises[1].partidosJ_tablaP += 1;
-        paises[1].partidosP_tablaP += 1;
-    }
-    else if(req.body.golesp1_resultados < req.body.golesp2_resultados)
-    {
-        paises[0].partidosJ_tablaP += 1;
-        paises[0].partidosP_tablaP += 1;
-        paises[1].puntosT_tablaP += 3;
-        paises[1].partidosJ_tablaP += 1;
-        paises[1].partidosG_tablaP += 1;
-        
-    }
-    else {
-        paises[0].puntosT_tablaP += 1;
-        paises[0].partidosJ_tablaP += 1;
-        paises[0].partidosE_tablaP += 1;
-        paises[1].puntosT_tablaP += 1;
-        paises[1].partidosJ_tablaP += 1;
-        paises[1].partidosE_tablaP += 1;
-    }
-    paises[0].golesF_tablaP += req.body.golesp1_resultados;
-    paises[0].golesF_tablaP += req.body.golesp1_resultados;*/
-    
-    return paises;
-}
+  })
+  return customPromise
   
+}
 
 
 
 class ResultService {
 
-
   constructor(){
   }
+
+  update = async (req, res, next) => {
+
+    let result = [];
+    await calcPunteo(req).then(paises => {
+      if(req.body.golesp1_resultados > req.body.golesp2_resultados)
+      {
+          paises[0].puntosT_tablaP += 3;
+          paises[0].partidosJ_tablaP += 1;
+          paises[0].partidosG_tablaP += 1;
+          paises[1].partidosJ_tablaP += 1;
+          paises[1].partidosP_tablaP += 1;
+      }
+      else if(req.body.golesp1_resultados < req.body.golesp2_resultados)
+      {
+          paises[0].partidosJ_tablaP += 1;
+          paises[0].partidosP_tablaP += 1;
+          paises[1].puntosT_tablaP += 3;
+          paises[1].partidosJ_tablaP += 1;
+          paises[1].partidosG_tablaP += 1;
+      }
+      else {
+          paises[0].puntosT_tablaP += 1;
+          paises[0].partidosJ_tablaP += 1;
+          paises[0].partidosE_tablaP += 1;
+          paises[1].puntosT_tablaP += 1;
+          paises[1].partidosJ_tablaP += 1;
+          paises[1].partidosE_tablaP += 1;
+      }
+      paises[0].golesF_tablaP += req.body.golesp1_resultados;
+      paises[0].golesC_tablaP += req.body.golesp2_resultados;
+      paises[1].golesF_tablaP += req.body.golesp2_resultados;
+      paises[1].golesC_tablaP += req.body.golesp1_resultados;
+      //console.log(data)
+      result = paises;
+    }).catch(err => {
+      console.log(err)
+  })
+    
+  
+  console.log(result);
+    sql.query(`UPDATE tb_tablaposiciones
+      SET puntosT_tablaP = ?, partidosJ_tablaP = ?, partidosG_tablaP = ?, partidosE_tablaP = ?,
+      partidosP_tablaP = ?, golesF_tablaP = ?, golesC_tablaP = ?
+      WHERE id_pais = ?`, [result[0].puntosT_tablaP, result[0].partidosJ_tablaP, result[0].partidosG_tablaP, result[0].partidosE_tablaP,
+      result[0].partidosP_tablaP, result[0].golesF_tablaP, result[0].golesC_tablaP, req.params.id_p1], function (err, data, fields) {
+          if (err) return next(new AppError(err, 500));
+    });
+    sql.query(`UPDATE tb_tablaposiciones
+      SET puntosT_tablaP = ?, partidosJ_tablaP = ?, partidosG_tablaP = ?, partidosE_tablaP = ?,
+      partidosP_tablaP = ?, golesF_tablaP = ?, golesC_tablaP = ?
+      WHERE id_pais = ?`, [result[1].puntosT_tablaP, result[1].partidosJ_tablaP, result[1].partidosG_tablaP, result[1].partidosE_tablaP,
+      result[1].partidosP_tablaP, result[1].golesF_tablaP, result[1].golesC_tablaP, req.params.id_p2], function (err, data, fields) {
+          if (err) return next(new AppError(err, 500));
+    });
+    res.status(201).json({
+      status: "success",
+      message: "Resultado actualizado!",
+    });
+  };
 
 
   create = (req, res, next) => {
@@ -104,24 +135,7 @@ class ResultService {
   }; 
 
 
-  update = (req, res, next) => {
-    let paises = calculoPuntos(req);
-    console.log(paises);
-    if (!req.params) {
-      return next(new AppError("Id no encontrado", 404));
-    }
-    sql.query(`UPDATE tb_tablaposiciones
-    SET puntosT_tablaP = ?, partidosJ_tablaP = ?, partidosG_tablaP = ?, partidosE_tablaP = ?,
-    partidosP_tablaP = ?, golesF_tablaP = ?, golesC_tablaP = ?
-    WHERE id_pais = ?`, [paises[0].puntosT_tablaP, paises[0].partidosJ_tablaP, paises[0].partidosG_tablaP, paises[0].partidosE_tablaP,
-    paises[0].partidosP_tablaP, paises[0].golesF_tablaP, paises[0].golesC_tablaP, req.params.id_p1], function (err, data, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(201).json({
-          status: "success",
-          message: "Resultado actualizado!",
-        });
-    });
-  };
+  
       
 
   delete = (req, res, next) => {

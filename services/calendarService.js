@@ -1,8 +1,6 @@
 const { json } = require("body-parser");
-const util = require('util');
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
-//const query = 
 
 class CalendarioService {
 
@@ -24,7 +22,6 @@ class CalendarioService {
         jornadas.push(result);
         if(jornadas.length == 8)
         {
-          //console.log(jornadas)
           res.status(200).json(jornadas);
         }
       });
@@ -104,4 +101,3 @@ class CalendarioService {
 }
 
 module.exports = CalendarioService;
-//module.exports = getJornadas;
