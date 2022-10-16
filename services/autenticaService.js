@@ -1,11 +1,17 @@
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
 var jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 
 class autenticaService{
 
     constructor(){
+    }
+
+
+    prueba = () => {
+     console.log('Prueba desde autentica');
     }
 
     autenticar = (req, res) => {
@@ -24,8 +30,8 @@ class autenticaService{
           // ANY DATA
         }
       
-        var token = jwt.sign(tokenData, 'Secret Password', {
-           expiresIn: 60 * 60 * 24 * 30 // expires in 24 hours
+        var token = jwt.sign(tokenData, process.env.passtoken, {
+           expiresIn: 60 * 60 * 24 * 30 // expires one month
         })
       
         res.send({
@@ -56,7 +62,27 @@ class autenticaService{
       }
     })
   }
-      
+     
+
+  verificar = (token) => {
+    const customPromise = new Promise((resolve, reject) => {
+
+      if(!token){
+        resolve(false);
+      }
+      token = token.replace('Bearer ', '')
+
+      jwt.verify(token, 'Secret Password', function(err, user) {
+      if (err) {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+      })
+    })
+    return customPromise
+    
+  }
 
 }  
 

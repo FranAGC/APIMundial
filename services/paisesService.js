@@ -1,6 +1,7 @@
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
-
+const autenticaService = require('./autenticaService');
+const autoken = new autenticaService();
 
 class PaisesService {
 
@@ -25,17 +26,32 @@ class PaisesService {
     };
 
 
-  find = (req, res, next) => {
-    
-      sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.nombre_region
-      FROM tb_paises
-      INNER JOIN tb_grupos AS g ON tb_paises.id_grupo = g.id_grupo
-      INNER JOIN tb_regiones AS r ON tb_paises.id_region = r.id_region
-      ORDER BY id_pais ASC`, function (err, data, fields) {
-        if(err) return next(new AppError(err))
-        res.status(200).json(data);
+  find = async (req, res, next) => {
+
+    var token = req.headers['authorization'];
+    let resaut;
+    await autoken.verificar(token).then(result => {
+      console.log(result);
+      if(result)
+      {
+        sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.nombre_region
+        FROM tb_paises
+        INNER JOIN tb_grupos AS g ON tb_paises.id_grupo = g.id_grupo
+        INNER JOIN tb_regiones AS r ON tb_paises.id_region = r.id_region
+        ORDER BY id_pais ASC`, function (err, data, fields) {
+          if(err) return next(new AppError(err))
+          res.status(200).json(data);
       });
-      };
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
+  };
 
 
   finOne = (req, res, next) => {

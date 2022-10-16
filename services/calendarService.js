@@ -1,4 +1,3 @@
-const { json } = require("body-parser");
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
 
