@@ -7,7 +7,7 @@ const service = new resultService();
 
 router.get('/', service.find);
 
-router.get('/:id', service.finOne);
+router.get('/:id', service.findOne);
 
 router.post('/', service.create);
 

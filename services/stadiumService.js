@@ -1,5 +1,7 @@
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
+const autenticaService = require('./autenticaService');
+const autoken = new autenticaService();
 
 
 class StadiumsService {
@@ -22,29 +24,56 @@ class StadiumsService {
         });
       }
     );
-    };
+  };
 
 
-  find = (req, res, next) => {
-      sql.query("SELECT * FROM tb_estadios", function (err, data, fields) {
-        if(err) return next(new AppError(err))
-        res.status(200).json(data);
-      });
-      };
 
+  findOne = async (req, res, next) => {
+    var token = req.headers['authorization'];
 
-  finOne = (req, res, next) => {
-    if (req.params.id > 9) {
-      return next(new AppError("No todo id found", 404));
-    }
-    sql.query(
-      "SELECT * FROM tb_estadios WHERE id_estadio = ?",
-      [req.params.id],
-      function (err, data, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(200).json(data);
+    await autoken.verificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        if (req.params.id > 8) {
+          return next(new AppError("Estadio no encontrado", 404));
+        }
+        sql.query(
+          "SELECT * FROM tb_estadios WHERE id_estadio = ?", [req.params.id],
+          function (err, data, fields) {
+            if (err) return next(new AppError(err, 500));
+            res.status(200).json(data);
+          }
+        );
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
       }
-    );
+    }).catch(err => {
+      console.log(err);
+    })
+  };
+
+  find = async (req, res, next) => {
+    var token = req.headers['authorization'];
+
+    await autoken.verificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        sql.query("SELECT * FROM tb_estadios", function (err, data, fields) {
+          if(err) return next(new AppError(err))
+          res.status(200).json(data);
+        });
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
   };
 
 

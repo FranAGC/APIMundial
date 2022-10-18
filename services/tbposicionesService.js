@@ -1,5 +1,7 @@
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
+const autenticaService = require('./autenticaService');
+const autoken = new autenticaService();
 
 
 
@@ -103,40 +105,63 @@ class ResultService {
   };
 
 
-  find = (req, res, next) => {
-      sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
-      partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
-      FROM tb_tablaposiciones as pos
-      INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
-      LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
-      ORDER BY pos.id_pais ASC`, function (err, data, fields) {
-        if(err) return next(new AppError(err))
-        res.status(200).json(data);
-      });
-      };
+  find = async (req, res, next) => {
+    var token = req.headers['authorization'];
 
-
-  finOne = (req, res, next) => {
-    if (!req.params.id) {
-      return next(new AppError("No todo id found", 404));
-    }
-    sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
-    partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
-    FROM tb_tablaposiciones as pos
-    INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
-    LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
-    WHERE pos.id_pais = ?`,
-      [req.params.id],
-      function (err, data, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(200).json(data);
+    await autoken.verificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
+          partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
+          FROM tb_tablaposiciones as pos
+          INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
+          LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
+          ORDER BY pos.id_pais ASC`, function (err, data, fields) {
+            if(err) return next(new AppError(err))
+            res.status(200).json(data);
+          });
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
       }
-    );
-  }; 
+    }).catch(err => {
+      console.log(err);
+    })
+  };
 
+  findOne = async (req, res, next) => {
+    var token = req.headers['authorization'];
 
-  
-      
+    await autoken.verificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        if (req.params.id > 32) {
+          return next(new AppError("No todo id found", 404));
+        }
+        sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
+        partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
+        FROM tb_tablaposiciones as pos
+        INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
+        LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
+        WHERE pos.id_pais = ?`,
+          [req.params.id],
+          function (err, data, fields) {
+            if (err) return next(new AppError(err, 500));
+            res.status(200).json(data);
+          }
+        );
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
+  };
 
   delete = (req, res, next) => {
     if (!req.params.id) {

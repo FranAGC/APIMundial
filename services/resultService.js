@@ -1,5 +1,7 @@
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
+const autenticaService = require('./autenticaService');
+const autoken = new autenticaService();
 
 
 
@@ -26,38 +28,65 @@ class ResultService {
     };
 
 
-  find = (req, res, next) => {
-      sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, p.nombre_pais as pais1, p2.nombre_pais as pais2
-      FROM tb_resultados as res
-      INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
-      LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
-      LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
-      ORDER BY id_resultados ASC`, function (err, data, fields) {
+
+  find = async (req, res, next) => {
+    var token = req.headers['authorization'];
+
+    await autoken.verificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, p.nombre_pais as pais1, p2.nombre_pais as pais2
+        FROM tb_resultados as res
+        INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
+        LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
+        LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
+        ORDER BY id_resultados ASC`, function (err, data, fields) {
         if(err) return next(new AppError(err))
         res.status(200).json(data);
       });
-      };
-
-
-  finOne = (req, res, next) => {
-    if (!req.params.id) {
-      return next(new AppError("No todo id found", 404));
-    }
-    sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, 
-    p.nombre_pais as pais1, p2.nombre_pais as pais2, c.hora_calendario
-    FROM tb_resultados as res
-    INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
-    LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
-    LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
-    WHERE id_resultados = ?`,
-      [req.params.id],
-      function (err, data, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(200).json(data);
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
       }
-    );
+    }).catch(err => {
+      console.log(err);
+    })
   };
+    
+  findOne = async (req, res, next) => {
+    var token = req.headers['authorization'];
 
+    await autoken.verificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        if (!req.params.id) {
+          return next(new AppError("No todo id found", 404));
+        }
+        sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, 
+        p.nombre_pais as pais1, p2.nombre_pais as pais2, c.hora_calendario
+        FROM tb_resultados as res
+        INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
+        LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
+        LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
+        WHERE id_resultados = ?`,
+          [req.params.id],
+          function (err, data, fields) {
+            if (err) return next(new AppError(err, 500));
+            res.status(200).json(data);
+          }
+        );
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
+  };
 
   update = (req, res, next) => {
     const body = req.body;

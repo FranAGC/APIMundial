@@ -9,7 +9,6 @@ class autenticaService{
     constructor(){
     }
 
-
     prueba = () => {
      console.log('Prueba desde autentica');
     }
@@ -17,13 +16,6 @@ class autenticaService{
     autenticar = (req, res) => {
         var username = req.body.user
         var password = req.body.password
-      
-        if( !(username === 'oscar' && password === '1234')){
-          res.status(401).send({
-            error: 'usuario o contraseña inválidos'
-          })
-          return
-        }
       
         var tokenData = {
           username: username
@@ -36,8 +28,9 @@ class autenticaService{
       
         res.send({
           token
-        })
+        });
       }
+
 
   secure = (req, res) => {
     var token = req.headers['authorization']
