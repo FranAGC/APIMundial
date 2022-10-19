@@ -1,10 +1,11 @@
 var nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
     service: 'hotmail',
     auth: {
-      user: 'frcontreras.78@hotmail.com',
-      pass: 'contraseña'
+      user: process.env.email,
+      pass: process.env.emailpass
     }
   });
   
@@ -18,9 +19,9 @@ const transporter = nodemailer.createTransport({
 
     enviarmail = (token, correo) => {
       var mailOptions = {
-        from: 'frcontreras.78@hotmail.com',
+        from: process.env.email,
         to: correo,
-        subject: 'Sending Email using Node.js',
+        subject: 'API Mundial Qatar 2022',
         text: 'Tu token es: ' + token
       };
 
