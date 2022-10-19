@@ -4,6 +4,7 @@ const calendarRouter = require('./calendarRouter');
 const tbpositionsRouter = require('./tbpositionsRouter');
 const resultsRouter = require('./resultsRouter');
 const autenticaRouter = require('./autenticaRouter');
+const sendMailRouter = require('./sendMailRouter');
 const express = require('express');
 const AppError = require("../utils/appError");
 const errorHandler = require("../utils/errorHandler");
@@ -18,6 +19,7 @@ function routerAPI(app) {
     router.use('/tbposiciones', tbpositionsRouter);
     router.use('/resultados', resultsRouter);
     router.use('/autenticacion', autenticaRouter);
+    router.use('/enviarmail', sendMailRouter);
     app.all("*", (req, res, next) => {
         next(new AppError(`The URL ${req.originalUrl} does not exists`, 404));
        });

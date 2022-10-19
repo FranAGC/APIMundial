@@ -3,6 +3,10 @@ const sql = require("./db.js");
 var jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const sendMailService = require('./../services/sendMailService');
+
+const service = new sendMailService();
+
 
 class autenticaService{
 
@@ -14,17 +18,20 @@ class autenticaService{
     }
 
     autenticar = (req, res) => {
-        var username = req.body.user
-        var password = req.body.password
+        var nombre = req.body.nombre
+        var correo = req.body.correo
       
         var tokenData = {
-          username: username
+          username: nombre
           // ANY DATA
         }
       
         var token = jwt.sign(tokenData, process.env.passtoken, {
            expiresIn: 60 * 60 * 24 * 30 // expires one month
         })
+
+        service.enviarmail(token, correo);
+
       
         res.send({
           token

@@ -13,8 +13,7 @@ class PaisesService {
     if (!req.body) return next(new AppError("No form data found", 404));
     const values = req.body;
     sql.query(
-      "INSERT INTO tb_paises SET ?",
-      values,
+      "INSERT INTO tb_paises SET ?", values,
       function (err, data, fields) {
         if (err) return next(new AppError(err, 500));
         res.status(201).json({
