@@ -45,17 +45,17 @@ class loginService{
             console.log(data);
               
             if (data.length == 0) {
-                console.log("Usuario no existe")
-                res.sendStatus("Usuario o contraseña incorrecta")
+                console.log("--> Usuario no existe")
+                res.status(401).send("Usuario o contraseña incorrecta")
             }else {
                 const hashedPassword = data[0].pass_usuario;
                 //get the hashedPassword from result    
                 if (await bcrypt.compare(pass, hashedPassword)) {
                     console.log("---------> Login Successful")
-                    res.send(`${user} is logged in!`)
+                    res.send(`${user}: Autenticación exitosa`)
                 }else {
-                    console.log("---------> Password Incorrect")
-                    res.send("Usuario o contraseña incorrecta")
+                    console.log("--> Password Incorrect")
+                    res.status(401).send("Usuario o contraseña incorrecta")
                 } //end of bcrypt.compare()  
             }//end of User exists i.e. results.length==0
             }
