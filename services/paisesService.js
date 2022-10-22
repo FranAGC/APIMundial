@@ -10,19 +10,41 @@ class PaisesService {
   }
 
 
-  create = (req, res, next) => {
-    if (!req.body) return next(new AppError("No form data found", 404));
-    const values = req.body;
-    sql.query(
-      "INSERT INTO tb_paises SET ?", values,
-      function (err, data, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(201).json({
-          status: "success",
-          message: "todo created!",
+  create = async (req, res, next) => {
+    var token = req.headers['authorization'];
+
+    await autoken.adminVerificar(token).then(result => {
+      console.log(result);
+      if(result)
+      {
+        if (!req.body) return next(new AppError("No form data found", 404));
+        const values = req.body;
+        sql.query(
+          "INSERT INTO tb_paises SET ?", values,
+          function (err, data, fields) {
+            if (err) return next(new AppError(err, 500));
+            res.status(201).json({
+              status: "success",
+              message: "Pais creado!",
+            });
+          }
+        );
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
         });
       }
-    );
+    }).catch(err => {
+      console.log(err);
+    })
+
+
+
+
+
+
+    
   };
 
 

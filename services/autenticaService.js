@@ -22,12 +22,18 @@ class autenticaService{
         }
       
         var token = jwt.sign(tokenData, process.env.usertoken, {
-           expiresIn: 60 * 60 * 24 * 30 // expires one month
+           expiresIn: 60 * 60 * 24 * 30 //Token valido para un mes
         })
+        console.log(nombre);
+        sql.query("INSERT INTO tb_usuariosapi VALUES (0,?,?,?,NOW())",[nombre, correo, token], 
+                function (err, result) {
+                    if (err) return next(new AppError(err, 500));
+                    console.log ("Usuario Creado");
+                    console.log(result.insertId);
+               })
 
         service.enviarmail(token, correo);
 
-      
         res.send({
           token
         });
