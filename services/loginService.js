@@ -51,7 +51,8 @@ class loginService{
                 const hashedPassword = data[0].pass_usuario;
                 //get the hashedPassword from result    
                 if (await bcrypt.compare(pass, hashedPassword)) {
-                    console.log("---------> Login Successful")
+                    
+                    console.log("----> Login Successful", autoken.adminToken(user))
                     res.send(`${user}: Autenticación exitosa`)
                 }else {
                     console.log("--> Password Incorrect")

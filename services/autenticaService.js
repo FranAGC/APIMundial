@@ -51,8 +51,43 @@ class autenticaService{
       })
     })
     return customPromise
-    
   }
+
+  adminToken = (user) => {
+  
+    var tokenData = {
+      username: user
+    }
+  
+    var token = jwt.sign(tokenData, process.env.admintoken, {
+       expiresIn: 60 * 60 * 1 //token duracion de una hora
+    })
+
+    return token
+  }
+ 
+
+adminVerificar = (token) => {
+const customPromise = new Promise((resolve, reject) => {
+
+  if(!token){
+    resolve(false);
+  }
+  token = token.replace('Bearer ', '')
+
+  jwt.verify(token, process.env.admintoken, function(err, user) {
+  if (err) {
+    resolve(false);
+  } else {
+    resolve(true);
+  }
+  })
+})
+return customPromise
+}
+
+
+
 
 }  
 
