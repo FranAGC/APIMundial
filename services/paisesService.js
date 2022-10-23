@@ -15,16 +15,15 @@ create = async (req, res, next) => {
   const values = req.body;
   await autoken.adminVerificar(token).then(result => {
     console.log(result);
-    if(result)
-    {
+    if(result) {
       sql.query("INSERT INTO tb_paises SET ?", values, function (err, data, fields) {
-          if (err) return next(new AppError(err, 500));
-          res.status(201).json({
-            status: "success",
-            message: "Pais creado!",
-          });
-        }
-      );
+        if (err) return next(new AppError(err, 500));
+        res.status(201).json({
+          status: "success",
+          message: "Pais creado!",
+        });
+      }
+    );
     }else {
       console.log(result);
       res.status(401).send({
@@ -42,8 +41,7 @@ find = async (req, res, next) => {
 
   await autoken.verificar(token).then(result => {
     console.log(result);
-    if(result)
-    {
+    if(result) {
       sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.nombre_region
       FROM tb_paises
       INNER JOIN tb_grupos AS g ON tb_paises.id_grupo = g.id_grupo
@@ -70,7 +68,6 @@ findOne = async (req, res, next) => {
   await autoken.verificar(token).then(result => {
     console.log(result);
     if(result) {
-
       if (req.params.id > 32) {
         return next(new AppError("País no encontrado", 404));
       }
@@ -101,8 +98,7 @@ update = async (req, res, next) => {
 
   await autoken.adminVerificar(token).then(result => {
     console.log(result);
-    if(result)
-    {
+    if(result) {
       if (!req.body) {
         return next(new AppError("No form data found", 404));
       }
@@ -138,8 +134,7 @@ delete = async (req, res, next) => {
 
   await autoken.adminVerificar(token).then(result => {
     console.log(result);
-    if(result)
-    {
+    if(result) {
       if (!req.params.id) {
         return next(new AppError("Pais no encontrado!", 404));
       }

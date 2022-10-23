@@ -4,21 +4,18 @@ const autenticaService = require('./autenticaService');
 const autoken = new autenticaService();
 
 
-
-function calcPunteo(req) {
+function calcPunteo(body) {
   const customPromise = new Promise((resolve, reject) => {
     sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP, 
         partidosP_tablaP, golesF_tablaP, golesC_tablaP
         FROM tb_tablaposiciones
-        WHERE id_pais in (?,?)`,[req.params.id_p1,req.params.id_p2], function (err, result, fields) {
+        WHERE id_pais in (?,?)`,[body.id_pais1,body.id_pais2], function (err, result, fields) {
         if (err) throw err;
         //console.log(result);
         resolve(result);
     })
-
   })
   return customPromise
-  
 }
 
 
@@ -28,11 +25,10 @@ class ResultService {
   constructor(){
   }
 
-  update = async (req, res, next) => {
-
+  upRes = async (body) => {
     let result = [];
-    await calcPunteo(req).then(paises => {
-      if(req.body.golesp1_resultados > req.body.golesp2_resultados)
+    await calcPunteo(body).then(paises => {
+      if(body.golesp1_resultados > body.golesp2_resultados)
       {
           paises[0].puntosT_tablaP += 3;
           paises[0].partidosJ_tablaP += 1;
@@ -40,7 +36,7 @@ class ResultService {
           paises[1].partidosJ_tablaP += 1;
           paises[1].partidosP_tablaP += 1;
       }
-      else if(req.body.golesp1_resultados < req.body.golesp2_resultados)
+      else if(body.golesp1_resultados < body.golesp2_resultados)
       {
           paises[0].partidosJ_tablaP += 1;
           paises[0].partidosP_tablaP += 1;
@@ -56,52 +52,58 @@ class ResultService {
           paises[1].partidosJ_tablaP += 1;
           paises[1].partidosE_tablaP += 1;
       }
-      paises[0].golesF_tablaP += req.body.golesp1_resultados;
-      paises[0].golesC_tablaP += req.body.golesp2_resultados;
-      paises[1].golesF_tablaP += req.body.golesp2_resultados;
-      paises[1].golesC_tablaP += req.body.golesp1_resultados;
+      paises[0].golesF_tablaP += body.golesp1_resultados;
+      paises[0].golesC_tablaP += body.golesp2_resultados;
+      paises[1].golesF_tablaP += body.golesp2_resultados;
+      paises[1].golesC_tablaP += body.golesp1_resultados;
       //console.log(data)
       result = paises;
     }).catch(err => {
       console.log(err)
   })
-    
   
   console.log(result);
     sql.query(`UPDATE tb_tablaposiciones
       SET puntosT_tablaP = ?, partidosJ_tablaP = ?, partidosG_tablaP = ?, partidosE_tablaP = ?,
       partidosP_tablaP = ?, golesF_tablaP = ?, golesC_tablaP = ?
       WHERE id_pais = ?`, [result[0].puntosT_tablaP, result[0].partidosJ_tablaP, result[0].partidosG_tablaP, result[0].partidosE_tablaP,
-      result[0].partidosP_tablaP, result[0].golesF_tablaP, result[0].golesC_tablaP, req.params.id_p1], function (err, data, fields) {
+      result[0].partidosP_tablaP, result[0].golesF_tablaP, result[0].golesC_tablaP, body.id_pais1], function (err, data, fields) {
           if (err) return next(new AppError(err, 500));
     });
     sql.query(`UPDATE tb_tablaposiciones
       SET puntosT_tablaP = ?, partidosJ_tablaP = ?, partidosG_tablaP = ?, partidosE_tablaP = ?,
       partidosP_tablaP = ?, golesF_tablaP = ?, golesC_tablaP = ?
       WHERE id_pais = ?`, [result[1].puntosT_tablaP, result[1].partidosJ_tablaP, result[1].partidosG_tablaP, result[1].partidosE_tablaP,
-      result[1].partidosP_tablaP, result[1].golesF_tablaP, result[1].golesC_tablaP, req.params.id_p2], function (err, data, fields) {
+      result[1].partidosP_tablaP, result[1].golesF_tablaP, result[1].golesC_tablaP, body.id_pais2], function (err, data, fields) {
           if (err) return next(new AppError(err, 500));
     });
-    res.status(201).json({
-      status: "success",
-      message: "Resultado actualizado!",
-    });
+
   };
 
 
-  create = (req, res, next) => {
-    if (!req.body) return next(new AppError("No form data found", 404));
+  create = async (req, res, next) => {
+    var token = req.headers['authorization'];
     const values = req.body;
-    sql.query(
-      "INSERT INTO tb_resultados SET ?",
-      values,
-      function (err, data, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(201).json({
-          status: "success",
-          message: "todo created!",
+    await autoken.adminVerificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        sql.query("INSERT INTO tb_resultados SET ?", values,
+        function (err, data, fields) {
+          if (err) return next(new AppError(err, 500));
+          res.status(201).json({
+            status: "success",
+            message: "todo created!",
+          });
+      });
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
         });
-    });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
   };
 
 
@@ -145,9 +147,7 @@ class ResultService {
         FROM tb_tablaposiciones as pos
         INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
         LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
-        WHERE pos.id_pais = ?`,
-          [req.params.id],
-          function (err, data, fields) {
+        WHERE pos.id_pais = ?`, [req.params.id], function (err, data, fields) {
             if (err) return next(new AppError(err, 500));
             res.status(200).json(data);
           }
@@ -163,20 +163,71 @@ class ResultService {
     })
   };
 
-  delete = (req, res, next) => {
-    if (!req.params.id) {
-      return next(new AppError("No todo id found", 404));
-    }
-    sql.query(`DELETE FROM tb_resultados WHERE id_resultados = ?`, req.params.id,
-      function (err, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(201).json({
-          status: "success",
-          message: "resultado eliminado!",
+
+  update = async (req, res, next) => {
+    var token = req.headers['authorization'];
+  
+    await autoken.adminVerificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        if (!req.body) {
+          return next(new AppError("No form data found", 404));
+        }
+        const body = req.body;
+        if (!req.params.id) {
+          return next(new AppError("Id no encontrado", 404));
+        }
+        sql.query(`UPDATE tb_tablaposiciones
+        SET puntosT_tablaP = ?, partidosJ_tablaP = ?, partidosG_tablaP = ?, partidosE_tablaP = ?,
+        partidosP_tablaP = ?, golesF_tablaP = ?, golesC_tablaP = ?
+        WHERE id_pais = ?`, [body.puntosT_tablaP, body.partidosJ_tablaP, body.partidosG_tablaP, body.partidosE_tablaP,
+          body.partidosP_tablaP, body.golesF_tablaP, body.golesC_tablaP, req.params.id], 
+          function (err, data, fields) {
+            if (err) return next(new AppError(err, 500));
+      });
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
         });
       }
-    );
-  }
+    }).catch(err => {
+      console.log(err);
+    })
+  };
+
+
+
+
+  delete = async (req, res, next) => {
+    var token = req.headers['authorization'];
+  
+    await autoken.adminVerificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        if (!req.params.id) {
+          return next(new AppError("Pais no encontrado!", 404));
+        }
+        sql.query(`DELETE FROM tb_resultados WHERE id_resultados = ?`, req.params.id,
+        function (err, fields) {
+          if (err) return next(new AppError(err, 500));
+          res.status(201).json({
+            status: "success",
+            message: "Pais eliminado de la tabla!",
+          });
+        }
+      );
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
+  };
+
 }
 
 module.exports = ResultService;

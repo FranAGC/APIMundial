@@ -11,7 +11,7 @@ router.get('/:id', service.findOne);
 
 router.post('/', service.create);
 
-router.patch('/:id_p1/:id_p2', service.update);
+router.patch('/:id', service.update);
 
 router.delete('/:id', service.delete);
 

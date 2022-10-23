@@ -1,6 +1,11 @@
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
 const autenticaService = require('./autenticaService');
+const tbposService = require('./../services/tbposicionesService');
+const tbService = new tbposService();
+
+
+
 const autoken = new autenticaService();
 
 
@@ -12,21 +17,29 @@ class ResultService {
   }
 
 
-  create = (req, res, next) => {
-    if (!req.body) return next(new AppError("No form data found", 404));
+  create = async (req, res, next) => {
+    var token = req.headers['authorization'];
     const values = req.body;
-    sql.query(
-      "INSERT INTO tb_resultados SET ?",
-      values,
-      function (err, data, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(201).json({
-          status: "success",
-          message: "todo created!",
+    await autoken.adminVerificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        sql.query("INSERT INTO tb_resultados SET ?", values, function (err, data, fields) {
+          if (err) return next(new AppError(err, 500));
+          res.status(201).json({
+            status: "success",
+            message: "Resultados ingresados!",
+          });
         });
-      });
-    };
-
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
+  };
 
 
   find = async (req, res, next) => {
@@ -54,7 +67,8 @@ class ResultService {
       console.log(err);
     })
   };
-    
+
+
   findOne = async (req, res, next) => {
     var token = req.headers['authorization'];
 
@@ -70,11 +84,47 @@ class ResultService {
         INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
         LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
         LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
-        WHERE id_resultados = ?`,
-          [req.params.id],
+        WHERE id_resultados = ?`, [req.params.id], function (err, data, fields) {
+          if (err) return next(new AppError(err, 500));
+          res.status(200).json(data);
+        }
+      );
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
+  };
+
+
+
+  update = async (req, res, next) => {
+    var token = req.headers['authorization'];
+  
+    await autoken.adminVerificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        if (!req.body) {
+          return next(new AppError("No form data found", 404));
+        }
+        const body = req.body;
+        if (!req.params.id) {
+          return next(new AppError("Id no encontrado", 404));
+        }
+        sql.query(`UPDATE tb_resultados SET golesp1_resultados = ?, golesp2_resultados = ?
+        WHERE id_resultados = ?`, [body.golesp1_resultados, body.golesp2_resultados, req.params.id],
           function (err, data, fields) {
             if (err) return next(new AppError(err, 500));
-            res.status(200).json(data);
+
+            tbService.upRes(body)
+            res.status(201).json({
+              status: "success",
+              message: "Resultado actualizado!",
+            });
           }
         );
       }else {
@@ -87,40 +137,37 @@ class ResultService {
       console.log(err);
     })
   };
+  
 
-  update = (req, res, next) => {
-    const body = req.body;
-    if (!req.params.id) {
-      return next(new AppError("Id no encontrado", 404));
-    }
-    sql.query(`UPDATE tb_resultados SET golesp1_resultados = ?, golesp2_resultados = ?
-    WHERE id_resultados = ?`, 
-    [body.golesp1_resultados, body.golesp2_resultados, req.params.id],
-      function (err, data, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(201).json({
-          status: "success",
-          message: "Resultado actualizado!",
+  delete = async (req, res, next) => {
+    var token = req.headers['authorization'];
+  
+    await autoken.adminVerificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        if (!req.params.id) {
+          return next(new AppError("Resultado no encontrado!", 404));
+        }
+        sql.query(`DELETE FROM tb_resultados WHERE id_resultados = ?`, req.params.id,
+        function (err, fields) {
+          if (err) return next(new AppError(err, 500));
+          res.status(201).json({
+            status: "success",
+            message: "Resultado eliminado!",
+          });
+        }
+      );
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
         });
       }
-    );
+    }).catch(err => {
+      console.log(err);
+    })
   };
       
-
-  delete = (req, res, next) => {
-    if (!req.params.id) {
-      return next(new AppError("No todo id found", 404));
-    }
-    sql.query(`DELETE FROM tb_resultados WHERE id_resultados = ?`, req.params.id,
-      function (err, fields) {
-        if (err) return next(new AppError(err, 500));
-        res.status(201).json({
-          status: "success",
-          message: "resultado eliminado!",
-        });
-      }
-    );
-  }
 }
 
 module.exports = ResultService;
