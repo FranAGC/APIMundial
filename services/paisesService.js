@@ -68,9 +68,9 @@ findOne = async (req, res, next) => {
   await autoken.verificar(token).then(result => {
     console.log(result);
     if(result) {
-      if (req.params.id > 32) {
+      /*if (req.params.id > 32) {
         return next(new AppError("País no encontrado", 404));
-      }
+      }*/
       sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.nombre_region
       FROM tb_paises
       INNER JOIN tb_grupos AS g ON tb_paises.id_grupo = g.id_grupo
