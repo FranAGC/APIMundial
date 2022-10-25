@@ -52,13 +52,14 @@ class ResultService {
       if(result) {
         const jornadas = [];
       for(var i = 1; i <= 8; i++){
-        sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, p.nombre_pais as pais1, p2.nombre_pais as pais2, j.nombre_jornada
+        sql.query(`SELECT res.id_resultados, res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, 
+        p.nombre_pais as pais1, p2.nombre_pais as pais2, j.nombre_jornada
           FROM tb_resultados as res
-          INNER JOIN tb_jornadas AS j ON res.id_jornada = j.id_jornada
           INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
           LEFT JOIN tb_paises AS p ON c.id_pais1 = p.id_pais
           LEFT JOIN tb_paises AS p2 ON c.id_pais2 = p2.id_pais
-          WHERE res.id_jornada = ?
+          LEFT JOIN tb_jornadas AS j ON c.id_jornada = j.id_jornada
+          WHERE j.id_jornada = ?
           ORDER BY id_resultados ASC`, [i], function (err, result) {
           if (err) return next(new AppError(err, 500));
           jornadas.push(result);
