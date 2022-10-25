@@ -131,8 +131,10 @@ class ResultService {
         WHERE id_resultados = ?`, [body.golesp1_resultados, body.golesp2_resultados, req.params.id],
           function (err, data, fields) {
             if (err) return next(new AppError(err, 500));
-
-            tbService.upRes(body)
+            if(req.params.id <= 48) {
+              tbService.upRes(body)
+            }
+            
             res.status(201).json({
               status: "success",
               message: "Resultado actualizado!"
