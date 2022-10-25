@@ -131,17 +131,18 @@ update = async (req, res, next) => {
         return next(new AppError("No form data found", 404));
       }
       const body = req.body;
-      if (!req.params.id) {
+      console.log(body);
+      /*if (!req.params.id) {
         return next(new AppError("Id no encontrado", 404));
-      }
+      }*/
       sql.query(`UPDATE tb_paises SET nombre_pais = ?, codigo_pais = ?, ranking_pais = ?, 
       copas_pais = ?, bandera_pais = ?, id_grupo = ?, id_region = ? WHERE id_pais = ?`, 
-          [body.nombre_pais, body.codigo_pais, body.ranking_pais, body.copas_pais, body.bandera_pais, body.id_grupo, body.id_region, req.params.id],
+        [body.nombre_pais, body.codigo_pais, body.ranking_pais, body.copas_pais, body.bandera_pais, body.id_grupo, body.id_region, req.params.id],
         function (err, data, fields) {
           if (err) return next(new AppError(err, 500));
           res.status(201).json({
             status: "success",
-            message: "Pais actualizado!",
+            message: "Pais actualizado!"
           });
         }
       );
