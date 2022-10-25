@@ -11,6 +11,8 @@ router.get('/', service.find);
 
 router.get('/:id', service.findOne);
 
+router.get('/fecha/:id', service.fecha);
+
 router.post('/', service.create);
 
 router.put('/:id', service.update);
