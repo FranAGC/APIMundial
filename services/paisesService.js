@@ -93,6 +93,34 @@ findOne = async (req, res, next) => {
 };
 
 
+
+upPais = async (req, res, next) => {
+  var token = req.headers['authorization'];
+
+  await autoken.verificar(token).then(result => {
+    console.log(result);
+    if(result) {
+      sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, id_grupo, id_region
+      FROM tb_paises WHERE id_pais = ?`, [req.params.id],
+        function (err, data, fields) {
+          if (err) return next(new AppError(err, 500));
+          res.status(200).json(data);
+        }
+      );
+    }else {
+      console.log(result);
+      res.status(401).send({
+      error: 'Token inválido'
+      });
+    }
+  }).catch(err => {
+    console.log(err);
+  })
+};
+
+
+
+
 update = async (req, res, next) => {
   var token = req.headers['authorization'];
 

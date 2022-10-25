@@ -9,6 +9,8 @@ router.get('/', service.find);
 
 router.get('/:id', service.findOne);
 
+router.get('/pais/:id', service.upPais);
+
 router.post('/', service.create);
 
 router.put('/:id', service.update);
