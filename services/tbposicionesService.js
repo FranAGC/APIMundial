@@ -9,9 +9,9 @@ function calcPunteo(body) {
     sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP, 
         partidosP_tablaP, golesF_tablaP, golesC_tablaP
         FROM tb_tablaposiciones
-        WHERE id_pais in (?,?)`,[body.id_pais1,body.id_pais2], function (err, result, fields) {
+        WHERE id_pais in (?,?)`,[body.id_pais1, body.id_pais2], function (err, result, fields) {
         if (err) throw err;
-        //console.log(result);
+        console.log(result);
         resolve(result);
     })
   })
@@ -52,10 +52,10 @@ class ResultService {
           paises[1].partidosJ_tablaP += 1;
           paises[1].partidosE_tablaP += 1;
       }
-      paises[0].golesF_tablaP += body.golesp1_resultados;
-      paises[0].golesC_tablaP += body.golesp2_resultados;
-      paises[1].golesF_tablaP += body.golesp2_resultados;
-      paises[1].golesC_tablaP += body.golesp1_resultados;
+      paises[0].golesF_tablaP += parseInt(body.golesp1_resultados); 
+      paises[0].golesC_tablaP += parseInt(body.golesp2_resultados);
+      paises[1].golesF_tablaP += parseInt(body.golesp2_resultados);
+      paises[1].golesC_tablaP += parseInt(body.golesp1_resultados);
       //console.log(data)
       result = paises;
     }).catch(err => {
@@ -92,7 +92,7 @@ class ResultService {
           if (err) return next(new AppError(err, 500));
           res.status(201).json({
             status: "success",
-            message: "todo created!",
+            message: "todo created!"
           });
       });
       }else {
@@ -113,15 +113,23 @@ class ResultService {
     await autoken.verificar(token).then(result => {
       console.log(result);
       if(result) {
-        sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
-          partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
-          FROM tb_tablaposiciones as pos
-          INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
-          LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
-          ORDER BY pos.id_pais ASC`, function (err, data, fields) {
-            if(err) return next(new AppError(err))
-            res.status(200).json(data);
-          });
+          const grupos = [];
+          for(var i = 1; i <= 8; i++){
+            sql.query(`SELECT pos.id_pais, puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
+            partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
+            FROM tb_tablaposiciones as pos
+            INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
+            LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
+            WHERE g.id_grupo = ?`, [i], function (err, result, fields) {
+              if (err) return next(new AppError(err, 500));
+              console.log(result);
+              grupos.push(result);
+              if(grupos.length == 8)
+              {
+                res.status(200).json(grupos);
+              }
+            });
+          };
       }else {
         console.log(result);
         res.status(401).send({
@@ -133,6 +141,9 @@ class ResultService {
     })
   };
 
+
+
+
   findOne = async (req, res, next) => {
     var token = req.headers['authorization'];
 
@@ -142,7 +153,7 @@ class ResultService {
         if (req.params.id > 32) {
           return next(new AppError("No todo id found", 404));
         }
-        sql.query(`SELECT puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
+        sql.query(`SELECT pos.id_pais, puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
         partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
         FROM tb_tablaposiciones as pos
         INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
@@ -213,7 +224,7 @@ class ResultService {
           if (err) return next(new AppError(err, 500));
           res.status(201).json({
             status: "success",
-            message: "Pais eliminado de la tabla!",
+            message: "Pais eliminado de la tabla!"
           });
         }
       );

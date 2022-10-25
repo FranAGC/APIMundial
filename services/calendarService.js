@@ -87,7 +87,7 @@ class CalendarioService {
             if (err) return next(new AppError(err, 500));
             res.status(201).json({
               status: "success",
-              message: "Partido Creado!",
+              message: "Partido Creado!"
             });
         });
       }else {
@@ -122,7 +122,7 @@ class CalendarioService {
             if (err) return next(new AppError(err, 500));
             res.status(201).json({
               status: "success",
-              message: "Partido actualizado!",
+              message: "Partido actualizado!"
             });
           }
         );
@@ -152,7 +152,7 @@ class CalendarioService {
           if (err) return next(new AppError(err, 500));
           res.status(201).json({
             status: "success",
-            message: "Partido eliminado!",
+            message: "Partido eliminado!"
           });
         }
       );

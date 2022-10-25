@@ -97,16 +97,16 @@ class StadiumsService {
           return next(new AppError("No form data found", 404));
         }
         const body = req.body;
-        if (!req.params.id) {
+        /*if (!req.params.id) {
           return next(new AppError("Id no encontrado", 404));
-        }
+        }*/
         sql.query(`UPDATE tb_estadios SET nombre_estadio = ?, capacidad_estadio = ?, ciudad_estadio = ?, 
         descripcion_estadio = ?, foto_estadio = ? WHERE id_estadio = ?`, [body.nombre_estadio, body.capacidad_estadio, body.ciudad_estadio, body.descripcion_estadio, body.foto_estadio, req.params.id],
           function (err, data, fields) {
             if (err) return next(new AppError(err, 500));
             res.status(201).json({
               status: "success",
-              message: "Estadio actualizado!",
+              message: "Estadio actualizado!"
             });
           }
         );

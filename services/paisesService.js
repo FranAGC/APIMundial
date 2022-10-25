@@ -20,7 +20,7 @@ create = async (req, res, next) => {
         if (err) return next(new AppError(err, 500));
         res.status(201).json({
           status: "success",
-          message: "Pais creado!",
+          message: "Pais creado!"
         });
       }
     );
@@ -173,7 +173,7 @@ delete = async (req, res, next) => {
           if (err) return next(new AppError(err, 500));
           res.status(201).json({
             status: "success",
-            message: "Pais eliminado!",
+            message: "Pais eliminado!"
           });
         }
       );
