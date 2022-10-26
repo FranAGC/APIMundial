@@ -61,7 +61,6 @@ class StadiumsService {
     await autoken.verificar(token).then(result => {
       
       if(result) {
-        
         //console.log(lID);
         if (req.params.id > lID) {
           return next(new AppError("Estadio no encontrado", 404));
