@@ -115,7 +115,7 @@ class ResultService {
       if(result) {
           const grupos = [];
           for(var i = 1; i <= 8; i++){
-            sql.query(`SELECT pos.id_pais, puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
+            sql.query(`SELECT id_tablaP, pos.id_pais, puntosT_tablaP, partidosJ_tablaP, partidosG_tablaP, partidosE_tablaP,
             partidosP_tablaP, golesF_tablaP, golesC_tablaP, p.nombre_pais, g.nombre_grupo
             FROM tb_tablaposiciones as pos
             INNER JOIN tb_paises AS p ON pos.id_pais = p.id_pais
