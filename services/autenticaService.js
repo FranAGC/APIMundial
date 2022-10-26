@@ -40,6 +40,19 @@ class autenticaService{
       }
      
 
+  adminToken = (user) => {
+  
+    var tokenData = {
+      username: user
+    }
+  
+    var token = jwt.sign(tokenData, process.env.admintoken, {
+       expiresIn: 60 * 60 * 1 //token duracion de una hora
+    })
+
+    return token
+  }
+
   verificar = (token) => {
     const customPromise = new Promise((resolve, reject) => {
 
@@ -59,40 +72,26 @@ class autenticaService{
     return customPromise
   }
 
-  adminToken = (user) => {
-  
-    var tokenData = {
-      username: user
+
+
+  adminVerificar = (token) => {
+  const customPromise = new Promise((resolve, reject) => {
+
+    if(!token){
+      resolve(false);
     }
-  
-    var token = jwt.sign(tokenData, process.env.admintoken, {
-       expiresIn: 60 * 60 * 1 //token duracion de una hora
+    token = token.replace('Bearer ', '')
+
+    jwt.verify(token, process.env.admintoken, function(err, user) {
+    if (err) {
+      resolve(false);
+    } else {
+      resolve(true);
+    }
     })
-
-    return token
-  }
- 
-
-adminVerificar = (token) => {
-const customPromise = new Promise((resolve, reject) => {
-
-  if(!token){
-    resolve(false);
-  }
-  token = token.replace('Bearer ', '')
-
-  jwt.verify(token, process.env.admintoken, function(err, user) {
-  if (err) {
-    resolve(false);
-  } else {
-    resolve(true);
-  }
   })
-})
-return customPromise
-}
-
-
+  return customPromise
+ }
 
 
 }  
@@ -101,26 +100,3 @@ module.exports = autenticaService;
 
 
 
-/*secure = (req, res) => {
-  var token = req.headers['authorization']
-  if(!token){
-      res.status(401).send({
-        error: "Es necesario el token de autenticación"
-      })
-      return
-  }
-
-  token = token.replace('Bearer ', '')
-
-  jwt.verify(token, 'Secret Password', function(err, user) {
-    if (err) {
-      res.status(401).send({
-        error: 'Token inválido'
-      })
-    } else {
-      res.send({
-        message: 'Awwwww yeah!!!!'
-      })
-    }
-  })
-}*/
