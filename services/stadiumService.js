@@ -1,7 +1,20 @@
 const AppError = require("../utils/appError");
 const sql = require("./db.js");
 const autenticaService = require('./autenticaService');
+const { listenerCount } = require("./db.js");
 const autoken = new autenticaService();
+
+
+function lastID() {
+  const customPromise = new Promise((resolve, reject) => {
+    sql.query("SELECT * FROM tb_estadios ORDER BY id_estadio DESC LIMIT 1",
+    function (err, result) {
+        if (err) throw err;
+        resolve(result[0].id_estadio);
+    })
+  })
+  return customPromise
+}
 
 
 class StadiumsService {
@@ -9,20 +22,18 @@ class StadiumsService {
   constructor(){
   }
 
-
   create = async (req, res, next) => {
     var token = req.headers['authorization'];
     const values = req.body;
     await autoken.adminVerificar(token).then(result => {
       console.log(result);
-      if(result)
-      {
+      if(result) {
         sql.query("INSERT INTO tb_estadios SET ?", values,
           function (err, data, fields) {
             if (err) return next(new AppError(err, 500));
             res.status(201).json({
               status: "success",
-              message: "Estadio creado!",
+              message: "Estadio creado!"
             });
           }
         );
@@ -40,15 +51,22 @@ class StadiumsService {
 
   findOne = async (req, res, next) => {
     var token = req.headers['authorization'];
+    let lID = [];
+    await lastID().then(lres => {
+      lID = lres;
+    }).catch(err => {
+      console.log(err)
+    })
 
     await autoken.verificar(token).then(result => {
-      console.log(result);
+      
       if(result) {
-        if (req.params.id > 8) {
+        
+        //console.log(lID);
+        if (req.params.id > lID) {
           return next(new AppError("Estadio no encontrado", 404));
         }
-        sql.query(
-          "SELECT * FROM tb_estadios WHERE id_estadio = ?", [req.params.id],
+        sql.query("SELECT * FROM tb_estadios WHERE id_estadio = ?", [req.params.id],
           function (err, data, fields) {
             if (err) return next(new AppError(err, 500));
             res.status(200).json(data);

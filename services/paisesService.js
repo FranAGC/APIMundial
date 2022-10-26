@@ -4,11 +4,23 @@ const autenticaService = require('./autenticaService');
 const autoken = new autenticaService();
 
 
+
+function lastID() {
+  const customPromise = new Promise((resolve, reject) => {
+    sql.query("SELECT * FROM tb_paises ORDER BY id_pais DESC LIMIT 1",
+    function (err, result) {
+        if (err) throw err;
+        resolve(result[0].id_pais);
+    })
+  })
+  return customPromise
+}
+
+
 class PaisesService {
 
 constructor(){
 }
-
 
 create = async (req, res, next) => {
   var token = req.headers['authorization'];
@@ -65,12 +77,19 @@ find = async (req, res, next) => {
 findOne = async (req, res, next) => {
   var token = req.headers['authorization'];
 
+  let lID = [];
+  await lastID().then(lres => {
+    lID = lres;
+  }).catch(err => {
+    console.log(err)
+  })
+
   await autoken.verificar(token).then(result => {
     console.log(result);
     if(result) {
-      /*if (req.params.id > 32) {
+      if (req.params.id > lID) {
         return next(new AppError("País no encontrado", 404));
-      }*/
+      }
       sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.nombre_region
       FROM tb_paises
       INNER JOIN tb_grupos AS g ON tb_paises.id_grupo = g.id_grupo
