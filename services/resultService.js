@@ -113,7 +113,31 @@ class ResultService {
     })
   };
 
+  resultado = async (req, res, next) => {
+    var token = req.headers['authorization'];
 
+    await autoken.verificar(token).then(result => {
+      console.log(result);
+      if(result) {
+        if (!req.params.id) {
+          return next(new AppError("No todo id found", 404));
+        }
+        sql.query(`SELECT * FROM tb_resultados
+        WHERE id_resultados = ?`, [req.params.id], function (err, data, fields) {
+          if (err) return next(new AppError(err, 500));
+          res.status(200).json(data);
+        }
+      );
+      }else {
+        console.log(result);
+        res.status(401).send({
+        error: 'Token inválido'
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+    })
+  };
 
   update = async (req, res, next) => {
     var token = req.headers['authorization'];

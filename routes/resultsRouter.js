@@ -9,6 +9,8 @@ router.get('/', service.find);
 
 router.get('/:id', service.findOne);
 
+router.get('/res/:id', service.resultado);
+
 router.post('/', service.create);
 
 router.patch('/:id', service.update);
