@@ -14,13 +14,16 @@ class autenticaService{
   }
 
   userToken = (req, res) => {
-    var nombre = req.body.nombre
-    var correo = req.body.correo
+    var nombre = req.body.nombre;
+    var correo = req.body.correo;
+    
+    if(!req.body){
+     res.send({error: 'Solicitud denegada!'}); 
+    }
 
     var tokenData = {
       username: nombre
     }
-  
     var token = jwt.sign(tokenData, process.env.usertoken, {
         expiresIn: 60 * 60 * 24 * 30 //Token valido para un mes
     })
@@ -34,17 +37,15 @@ class autenticaService{
     service.enviarmail(token, correo);
     res.send({token});
   }
-     
 
-  adminToken = (user) => {
   
+  adminToken = (user) => {
     var tokenData = {
       username: user
     }
     var token = jwt.sign(tokenData, process.env.admintoken, {
        expiresIn: 60 * 60 * 1 //token duracion de una hora
     })
-
     return token
   }
 
