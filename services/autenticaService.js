@@ -13,11 +13,13 @@ class autenticaService{
   constructor(){
   }
 
-  userToken = (req, res) => {
+  userToken = (req, res, next) => {
     var nombre = req.body.nombre;
     var correo = req.body.correo;
+
+    console.log(req.body);
     
-    if(!req.body){
+    if(!req.body.nombre && !req.body.correo){
      res.send({error: 'Solicitud denegada!'}); 
     }
 
@@ -96,9 +98,7 @@ class autenticaService{
   token = token.replace('Bearer ', '')
   jwt.verify(token, process.env.usertoken, function(err, user) {
     if (err) {
-      res.status(401).send({
-        error: 'Token inválido'
-      })
+      res.status(401).send({error: 'Token inválido'})
     } else {
       res.send({message: 'Validacion de token exitosa'});
     }
