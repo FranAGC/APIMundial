@@ -8,8 +8,7 @@ const service = new autenticaService();
 
 router.post('/', service.userToken);
 router.get('/', service.verificar);
-router.post('/admin', service.adminToken);
-router.get('/admin', service.adminVerificar);
+router.post('/admin', service.valToken);
 
 
 
