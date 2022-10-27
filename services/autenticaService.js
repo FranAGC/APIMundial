@@ -89,26 +89,38 @@ class autenticaService{
  valToken = async (req, res, next) => {
   var token = req.headers['authorization']
   if(!token){
-      res.status(401).send({
-        error: "No hay token"
-      })
+      res.status(401).send({error: "No hay token"})
       return
   }
-
   token = token.replace('Bearer ', '')
+  jwt.verify(token, process.env.usertoken, function(err, user) {
+    if (err) {
+      res.status(401).send({
+        error: 'Token inválido'
+      })
+    } else {
+      res.send({message: 'Validacion de token exitosa'});
+    }
+  })
+}
 
+valTokenAdmin = async (req, res, next) => {
+  var token = req.headers['authorization']
+  if(!token){
+      res.status(401).send({error: "No hay token"})
+      return
+  }
+  token = token.replace('Bearer ', '')
   jwt.verify(token, process.env.admintoken, function(err, user) {
     if (err) {
       res.status(401).send({
         error: 'Token inválido'
       })
     } else {
-      res.send({
-        message: 'Validacion de token exitosa'
-      })
+      res.send({message: 'Validacion de token exitosa'});
     }
   })
-};
+}
 
 
 }  
