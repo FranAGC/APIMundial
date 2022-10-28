@@ -154,8 +154,10 @@ class ResultService {
             if(req.params.id <= 48) {
               tbService.upRes(body)
             }
+            console.log(req.body);
             
             res.status(201).json({
+              data,
               status: "success",
               message: "Resultado actualizado!"
             });
