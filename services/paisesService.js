@@ -154,7 +154,7 @@ update = async (req, res, next) => {
         [body.nombre_pais, body.codigo_pais, body.ranking_pais, body.copas_pais, body.bandera_pais, body.id_grupo, body.id_region, req.params.id],
         function (err, data, fields) {
           if (err) return next(new AppError(err, 500));
-          console.log("Data:  ",data, "Fields", fields);
+          //console.log("Data:  ", data, "Fields", fields);
           res.status(201).json({
             status: "success",
             message: "Pais actualizado!"
@@ -162,8 +162,10 @@ update = async (req, res, next) => {
         }
       );
     }else {
+      console.log(token, result, data)
       res.status(401).send({
-      error: 'Token inválido'
+        token,
+        error: 'Token inválido'
       });
     }
   }).catch(err => {
