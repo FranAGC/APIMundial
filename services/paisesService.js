@@ -164,7 +164,7 @@ update = async (req, res, next) => {
     }else {
       console.log(token, result, data)
       res.status(401).send({
-        token,
+        tkn: token,
         error: 'Token inválido'
       });
     }

@@ -26,7 +26,7 @@ class autenticaService{
       var tokenData = {
         username: nombre
       }
-      var token = jwt.sign(tokenData, process.env.usertoken, {
+      var token = jwt.sign(tokenData, process.env.USERTOKEN, {
           expiresIn: 60 * 60 * 24 * 30 //Token valido para un mes
       })
       console.log(nombre);
@@ -46,7 +46,7 @@ class autenticaService{
     var tokenData = {
       username: user
     }
-    var token = jwt.sign(tokenData, process.env.admintoken, {
+    var token = jwt.sign(tokenData, process.env.ADMINTOKEN, {
        expiresIn: 60 * 60 * 1 //token duracion de una hora
     })
     return token
@@ -59,7 +59,7 @@ class autenticaService{
       }
       token = token.replace('Bearer ', '')
 
-      jwt.verify(token, process.env.usertoken, function(err, user) {
+      jwt.verify(token, process.env.USERTOKEN, function(err, user) {
       if (err) {
         resolve(false);
       } else {
@@ -77,7 +77,7 @@ class autenticaService{
     }
     token = token.replace('Bearer ', '')
 
-    jwt.verify(token, process.env.admintoken, function(err, user) {
+    jwt.verify(token, process.env.ADMINTOKEN, function(err, user) {
     if (err) {
       resolve(false);
     } else {
@@ -97,7 +97,7 @@ class autenticaService{
       return
   }
   token = token.replace('Bearer ', '')
-  jwt.verify(token, process.env.usertoken, function(err, user) {
+  jwt.verify(token, process.env.USERTOKEN, function(err, user) {
     if (err) {
       res.status(401).send({error: 'Token inválido'})
     } else {
@@ -113,7 +113,7 @@ valTokenAdmin = async (req, res, next) => {
       return
   }
   token = token.replace('Bearer ', '')
-  jwt.verify(token, process.env.admintoken, function(err, user) {
+  jwt.verify(token, process.env.ADMINTOKEN, function(err, user) {
     if (err) {
       res.status(401).send({
         error: 'Token inválido'
