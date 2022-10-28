@@ -13,31 +13,32 @@ class autenticaService{
   constructor(){
   }
 
+
   userToken = (req, res, next) => {
     var nombre = req.body.nombre;
     var correo = req.body.correo;
 
     console.log(req.body);
     
-    if(!req.body.nombre && !req.body.correo){
+    if(!nombre || !correo){
      res.send({error: 'Solicitud denegada!'}); 
-    }
-
-    var tokenData = {
-      username: nombre
-    }
-    var token = jwt.sign(tokenData, process.env.usertoken, {
-        expiresIn: 60 * 60 * 24 * 30 //Token valido para un mes
-    })
-    console.log(nombre);
-    sql.query("INSERT INTO tb_usuariosapi VALUES (0,?,?,?,NOW())",[nombre, correo, token], 
-      function (err, result) {
-          if (err) return next(new AppError(err, 500));
-          console.log ("Usuario Creado");
-          console.log(result.insertId);
+    }else{
+      var tokenData = {
+        username: nombre
+      }
+      var token = jwt.sign(tokenData, process.env.usertoken, {
+          expiresIn: 60 * 60 * 24 * 30 //Token valido para un mes
       })
-    service.enviarmail(token, correo);
-    res.send({token});
+      console.log(nombre);
+      sql.query("INSERT INTO tb_usuariosapi VALUES (0,?,?,?,NOW())",[nombre, correo, token], 
+        function (err, result) {
+            if (err) return next(new AppError(err, 500));
+            console.log ("Usuario Creado");
+            console.log(result.insertId);
+        })
+      service.enviarmail(token, correo);
+      res.send({token});
+    }
   }
 
   
