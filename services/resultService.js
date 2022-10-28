@@ -122,7 +122,10 @@ class ResultService {
         if (!req.params.id) {
           return next(new AppError("No todo id found", 404));
         }
-        sql.query(`SELECT * FROM tb_resultados
+        sql.query(`SELECT res.id_calendario, res.golesp1_resultados, res.golesp2_resultados, 
+        c.id_pais1, c.id_pais2
+        FROM tb_resultados as res
+        INNER JOIN tb_calendario AS c ON res.id_calendario = c.id_calendario
         WHERE id_resultados = ?`, [req.params.id], function (err, data, fields) {
           if (err) return next(new AppError(err, 500));
           res.status(200).json(data);
