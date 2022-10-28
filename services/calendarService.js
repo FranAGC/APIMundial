@@ -13,7 +13,6 @@ class CalendarioService {
     var token = req.headers['authorization'];
 
     await autoken.verificar(token).then(result => {
-      console.log(result);
       if(result) {
         const jornadas = [];
     for(var i = 1; i <= 8; i++){
@@ -34,7 +33,6 @@ class CalendarioService {
         });
       };
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -49,7 +47,6 @@ class CalendarioService {
     var token = req.headers['authorization'];
 
     await autoken.verificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (!req.params.id) {
           return next(new AppError("No todo id found", 404));
@@ -66,7 +63,6 @@ class CalendarioService {
           }
         );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -80,7 +76,6 @@ class CalendarioService {
     var token = req.headers['authorization'];
 
     await autoken.verificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (!req.params.id) {
           return next(new AppError("No todo id found", 404));
@@ -92,7 +87,6 @@ class CalendarioService {
           }
         );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -110,7 +104,6 @@ class CalendarioService {
     var token = req.headers['authorization'];
     const values = req.body;
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         sql.query("INSERT INTO tb_calendario SET ?", values, function (err, data, fields) {
             if (err) return next(new AppError(err, 500));
@@ -120,7 +113,6 @@ class CalendarioService {
             });
         });
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -135,7 +127,6 @@ class CalendarioService {
     var token = req.headers['authorization'];
   
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (!req.body) {
           return next(new AppError("No form data found", 404));
@@ -156,7 +147,6 @@ class CalendarioService {
           }
         );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -171,7 +161,6 @@ class CalendarioService {
     var token = req.headers['authorization'];
   
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (!req.params.id) {
           return next(new AppError("Partido no encontrado!", 404));
@@ -186,7 +175,6 @@ class CalendarioService {
         }
       );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });

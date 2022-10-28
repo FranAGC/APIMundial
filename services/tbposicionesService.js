@@ -11,7 +11,6 @@ function calcPunteo(body) {
         FROM tb_tablaposiciones
         WHERE id_pais in (?,?)`,[body.id_pais1, body.id_pais2], function (err, result, fields) {
         if (err) throw err;
-        console.log(result);
         resolve(result);
     })
   })
@@ -85,7 +84,6 @@ class ResultService {
     var token = req.headers['authorization'];
     const values = req.body;
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         sql.query("INSERT INTO tb_resultados SET ?", values,
         function (err, data, fields) {
@@ -96,7 +94,6 @@ class ResultService {
           });
       });
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -111,7 +108,6 @@ class ResultService {
     var token = req.headers['authorization'];
 
     await autoken.verificar(token).then(result => {
-      console.log(result);
       if(result) {
           const grupos = [];
           for(var i = 1; i <= 8; i++){
@@ -122,7 +118,6 @@ class ResultService {
             LEFT JOIN tb_grupos AS g ON p.id_grupo = g.id_grupo
             WHERE g.id_grupo = ?`, [i], function (err, result, fields) {
               if (err) return next(new AppError(err, 500));
-              console.log(result);
               grupos.push(result);
               if(grupos.length == 8)
               {
@@ -131,7 +126,6 @@ class ResultService {
             });
           };
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -146,7 +140,7 @@ class ResultService {
     var token = req.headers['authorization'];
 
     await autoken.verificar(token).then(result => {
-      console.log(result);
+      //console.log(result);
       if(result) {
         if (req.params.id > 32) {
           return next(new AppError("No todo id found", 404));
@@ -158,7 +152,6 @@ class ResultService {
           }
         );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -173,7 +166,6 @@ class ResultService {
     var token = req.headers['authorization'];
 
     await autoken.verificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (req.params.id > 32) {
           return next(new AppError("No todo id found", 404));
@@ -189,7 +181,6 @@ class ResultService {
           }
         );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -204,7 +195,6 @@ class ResultService {
     var token = req.headers['authorization'];
   
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (!req.body) {
           return next(new AppError("No form data found", 404));
@@ -222,7 +212,6 @@ class ResultService {
             if (err) return next(new AppError(err, 500));
       });
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -233,13 +222,10 @@ class ResultService {
   };
 
 
-
-
   delete = async (req, res, next) => {
     var token = req.headers['authorization'];
   
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (!req.params.id) {
           return next(new AppError("Pais no encontrado!", 404));
@@ -254,7 +240,6 @@ class ResultService {
         }
       );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });

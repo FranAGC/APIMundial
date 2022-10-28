@@ -26,7 +26,6 @@ class StadiumsService {
     var token = req.headers['authorization'];
     const values = req.body;
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         sql.query("INSERT INTO tb_estadios SET ?", values,
           function (err, data, fields) {
@@ -38,7 +37,6 @@ class StadiumsService {
           }
         );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -61,7 +59,6 @@ class StadiumsService {
     await autoken.verificar(token).then(result => {
       
       if(result) {
-        //console.log(lID);
         if (req.params.id > lID) {
           return next(new AppError("Estadio no encontrado", 404));
         }
@@ -72,7 +69,6 @@ class StadiumsService {
           }
         );
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });
@@ -93,7 +89,6 @@ class StadiumsService {
           res.status(200).json(data);
         });
       }else {
-        console.log(result);
         res.status(401).send({
         error: 'Token inválido'
         });

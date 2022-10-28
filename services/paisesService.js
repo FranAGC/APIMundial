@@ -85,7 +85,6 @@ findOne = async (req, res, next) => {
   })
 
   await autoken.verificar(token).then(result => {
-    console.log(result);
     if(result) {
       if (req.params.id > lID) {
         return next(new AppError("País no encontrado", 404));
@@ -101,7 +100,6 @@ findOne = async (req, res, next) => {
         }
       );
     }else {
-      console.log(result);
       res.status(401).send({
       error: 'Token inválido'
       });
@@ -117,7 +115,6 @@ upPais = async (req, res, next) => {
   var token = req.headers['authorization'];
 
   await autoken.verificar(token).then(result => {
-    console.log(result);
     if(result) {
       sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, id_grupo, id_region
       FROM tb_paises WHERE id_pais = ?`, [req.params.id],
@@ -127,7 +124,6 @@ upPais = async (req, res, next) => {
         }
       );
     }else {
-      console.log(result);
       res.status(401).send({
       error: 'Token inválido'
       });
@@ -144,7 +140,6 @@ update = async (req, res, next) => {
   var token = req.headers['authorization'];
 
   await autoken.adminVerificar(token).then(result => {
-    console.log(result);
     if(result) {
       if (!req.body) {
         return next(new AppError("No form data found", 404));
@@ -167,7 +162,6 @@ update = async (req, res, next) => {
         }
       );
     }else {
-      console.log(result);
       res.status(401).send({
       error: 'Token inválido'
       });
@@ -182,7 +176,6 @@ delete = async (req, res, next) => {
   var token = req.headers['authorization'];
 
   await autoken.adminVerificar(token).then(result => {
-    console.log(result);
     if(result) {
       if (!req.params.id) {
         return next(new AppError("Pais no encontrado!", 404));
@@ -197,7 +190,6 @@ delete = async (req, res, next) => {
         }
       );
     }else {
-      console.log(result);
       res.status(401).send({
       error: 'Token inválido'
       });
