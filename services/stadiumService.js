@@ -37,9 +37,7 @@ class StadiumsService {
           }
         );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -69,29 +67,25 @@ class StadiumsService {
           }
         );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
     })
   };
 
+
   find = async (req, res, next) => {
     var token = req.headers['authorization'];
 
     await autoken.verificar(token).then(result => {
-      console.log(result);
       if(result) {
         sql.query("SELECT * FROM tb_estadios", function (err, data, fields) {
           if(err) return next(new AppError(err))
           res.status(200).json(data);
         });
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -103,7 +97,6 @@ class StadiumsService {
     var token = req.headers['authorization'];
   
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (!req.body) {
           return next(new AppError("No form data found", 404));
@@ -123,10 +116,7 @@ class StadiumsService {
           }
         );
       }else {
-        console.log(result);
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -139,7 +129,6 @@ class StadiumsService {
     var token = req.headers['authorization'];
   
     await autoken.adminVerificar(token).then(result => {
-      console.log(result);
       if(result) {
         if (!req.params.id) {
           return next(new AppError("Estadio no encontrado!", 404));
@@ -154,10 +143,7 @@ class StadiumsService {
           }
         );
       }else {
-        console.log(result);
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
