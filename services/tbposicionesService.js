@@ -76,7 +76,6 @@ class ResultService {
       result[1].partidosP_tablaP, result[1].golesF_tablaP, result[1].golesC_tablaP, body.id_pais2], function (err, data, fields) {
           if (err) return next(new AppError(err, 500));
     });
-
   };
 
 
