@@ -33,9 +33,7 @@ class CalendarioService {
         });
       };
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -87,17 +85,12 @@ class CalendarioService {
           }
         );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
     })
   };
-  
-  
-  
   
 
   create = async (req, res, next) => {
@@ -113,9 +106,7 @@ class CalendarioService {
             });
         });
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -147,9 +138,7 @@ class CalendarioService {
           }
         );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -175,15 +164,12 @@ class CalendarioService {
         }
       );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
     })
   };
-
 
 }
 

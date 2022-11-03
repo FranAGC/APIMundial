@@ -18,7 +18,6 @@ function calcPunteo(body) {
 }
 
 
-
 class ResultService {
 
   constructor(){
@@ -89,13 +88,11 @@ class ResultService {
           if (err) return next(new AppError(err, 500));
           res.status(201).json({
             status: "success",
-            message: "todo created!"
+            message: "registro creado!"
           });
       });
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -125,9 +122,7 @@ class ResultService {
             });
           };
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -151,9 +146,7 @@ class ResultService {
           }
         );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -180,9 +173,7 @@ class ResultService {
           }
         );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -211,9 +202,7 @@ class ResultService {
             if (err) return next(new AppError(err, 500));
       });
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -239,9 +228,7 @@ class ResultService {
         }
       );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -251,9 +238,3 @@ class ResultService {
 }
 
 module.exports = ResultService;
-
-
-
-
-
-

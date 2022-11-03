@@ -36,11 +36,8 @@ create = async (req, res, next) => {
         });
       }
     );
-    }else {
-      console.log(result);
-      res.status(401).send({
-      error: 'Token inválido'
-      });
+    } else {
+        res.status(401).send({error: 'Token inválido'});
     }
   }).catch(err => {
     console.log(err);
@@ -52,7 +49,6 @@ find = async (req, res, next) => {
   var token = req.headers['authorization'];
 
   await autoken.verificar(token).then(result => {
-    console.log(result);
     if(result) {
       sql.query(`SELECT id_pais, nombre_pais, codigo_pais, ranking_pais, copas_pais, bandera_pais, g.nombre_grupo, r.nombre_region
       FROM tb_paises
@@ -63,10 +59,7 @@ find = async (req, res, next) => {
         res.status(200).json(data);
     });
     }else {
-      console.log(result);
-      res.status(401).send({
-      error: 'Token inválido'
-      });
+      res.status(401).send({error: 'Token inválido'});
     }
   }).catch(err => {
     console.log(err);
@@ -100,9 +93,7 @@ findOne = async (req, res, next) => {
         }
       );
     }else {
-      res.status(401).send({
-      error: 'Token inválido'
-      });
+      res.status(401).send({error: 'Token inválido'});
     }
   }).catch(err => {
     console.log(err);
@@ -124,16 +115,12 @@ upPais = async (req, res, next) => {
         }
       );
     }else {
-      res.status(401).send({
-      error: 'Token inválido'
-      });
+      res.status(401).send({error: 'Token inválido'});
     }
   }).catch(err => {
     console.log(err);
   })
 };
-
-
 
 
 update = async (req, res, next) => {
@@ -145,7 +132,6 @@ update = async (req, res, next) => {
         return next(new AppError("No form data found", 404));
       }
       const body = req.body;
-      console.log(body);
       /*if (!req.params.id) {
         return next(new AppError("Id no encontrado", 404));
       }*/
@@ -162,7 +148,6 @@ update = async (req, res, next) => {
         }
       );
     }else {
-      console.log(token, result, data)
       res.status(401).send({
         tkn: token,
         error: 'Token inválido'
@@ -192,9 +177,7 @@ delete = async (req, res, next) => {
         }
       );
     }else {
-      res.status(401).send({
-      error: 'Token inválido'
-      });
+      res.status(401).send({error: 'Token inválido'});
     }
   }).catch(err => {
     console.log(err);

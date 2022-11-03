@@ -4,11 +4,7 @@ const autenticaService = require('./autenticaService');
 const tbposService = require('./../services/tbposicionesService');
 const tbService = new tbposService();
 
-
-
 const autoken = new autenticaService();
-
-
 
 
 class ResultService {
@@ -30,9 +26,7 @@ class ResultService {
           });
         });
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -67,15 +61,12 @@ class ResultService {
         });
       };
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
     })
   };
-
 
 
   findOne = async (req, res, next) => {
@@ -98,9 +89,7 @@ class ResultService {
         }
       );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -125,9 +114,7 @@ class ResultService {
         }
       );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -138,7 +125,6 @@ class ResultService {
     var token = req.headers['authorization'];
   
     await autoken.adminVerificar(token).then(result => {
-      //console.log(result);
       if(result) {
         if (!req.body) {
           return next(new AppError("No form data found", 404));
@@ -154,8 +140,6 @@ class ResultService {
             if(req.params.id <= 48) {
               tbService.upRes(body)
             }
-            console.log("id:", req.params.id, "body: ", req.body);
-            
             res.status(201).json({
               data,
               status: "success",
@@ -164,10 +148,7 @@ class ResultService {
           }
         );
       }else {
-        console.log(result);
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
@@ -193,9 +174,7 @@ class ResultService {
         }
       );
       }else {
-        res.status(401).send({
-        error: 'Token inválido'
-        });
+        res.status(401).send({error: 'Token inválido'});
       }
     }).catch(err => {
       console.log(err);
